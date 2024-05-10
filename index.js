@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -37,9 +37,17 @@ app.get('/bookings', async(req, res) => {
   res.send(result);
 })
 
+// bookDetails page
+app.get('/singleRoom/:id', async(req, res) =>{
+  console.log(req.params.id)
+  const result = await bookingCollection.findOne({_id:new ObjectId(req.params.id)})
+  console.log(result)
+  res.send(result)
+})
+
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
