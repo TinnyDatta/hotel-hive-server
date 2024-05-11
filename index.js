@@ -28,7 +28,8 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
 
-const bookingCollection = client.db('hotelBooking').collection('bookings')
+const bookingCollection = client.db('hotelBooking').collection('bookings');
+const addingCollection = client.db('hotelBooking').collection('addings');
 
 // read data for room page
 app.get('/bookings', async(req, res) => {
@@ -44,6 +45,25 @@ app.get('/singleRoom/:id', async(req, res) =>{
   console.log(result)
   res.send(result)
 })
+
+// my bookings
+app.post('/addings', async(req, res) => {
+  const adding = req.body;
+  console.log(adding)
+  const result = await addingCollection.insertOne(adding);
+  res.send(result)
+})
+
+// featured room
+// app.get('/bookings', async(req,res) =>{
+//   console.log(req.query.price_per_night<200);
+//   let query = {};
+//   if (req.query?.price_per_night){
+//     query = {price_per_night : req.query.price_per_night<200}
+//   }
+//   const result = await bookingCollection.find(query).toArray();
+//   res.send(result);
+// })
 
 
     // Send a ping to confirm a successful connection
