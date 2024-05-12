@@ -36,6 +36,7 @@ app.get('/bookings', async(req, res) => {
   const cursor = bookingCollection.find();
   const result = await cursor.toArray();
   res.send(result);
+  // console.log(result)
 })
 
 // bookDetails page
@@ -51,6 +52,18 @@ app.post('/addings', async(req, res) => {
   const adding = req.body;
   console.log(adding)
   const result = await addingCollection.insertOne(adding);
+  res.send(result)
+})
+
+app.get('/myBooking/:email', async(req, res) => {
+  console.log(req.params.email);
+  const result = await addingCollection.find({email:req.params.email}).toArray();
+  res.send(result);
+})
+
+app.delete('/delete/:id', async(req,res) => {
+  const result = await addingCollection.deleteOne({_id: new ObjectId(req.params.id)})
+  console.log(result)
   res.send(result)
 })
 
