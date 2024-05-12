@@ -55,6 +55,26 @@ app.post('/addings', async(req, res) => {
   res.send(result)
 })
 
+app.get('/addings/:id', async(req, res) => {
+  const id = req.params.id;
+  const query = {_id : new ObjectId(id)}
+  const result = await addingCollection.findOne(query) 
+  res.send(result)
+})
+
+app.put('/addings/:id', async(req, res) => {
+  const id = req.params.id;
+  const filter = {_id: new ObjectId(id)}
+  const options = { upsert: true };
+  const data = {
+    $set: {
+      deadline : req.body.deadline
+    }
+  }
+  const result = await addingCollection.updateOne(filter, data, options) 
+  res.send(result)
+})
+
 app.get('/myBooking/:email', async(req, res) => {
   console.log(req.params.email);
   const result = await addingCollection.find({email:req.params.email}).toArray();
