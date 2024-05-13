@@ -1,13 +1,21 @@
 const express = require('express');
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
 require('dotenv').config();
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 5000;
 
 // middleware
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:5173'
+  ],
+  credentials: true
+}));
 app.use(express.json());
+app.use(cookieParser());
 
 
 
@@ -23,6 +31,12 @@ const client = new MongoClient(uri, {
   }
 });
 
+// middlewares
+const logger = (req, res, next) => {
+  console.log('log info', req.method, req.url)
+  next();
+}
+
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
@@ -31,8 +45,33 @@ async function run() {
 const bookingCollection = client.db('hotelBooking').collection('bookings');
 const addingCollection = client.db('hotelBooking').collection('addings');
 
+// token
+app.post('/jwt', logger, async(req, res) => {
+   const user = req.body;
+   console.log('user token', user);
+   const token = jwt.sign(user, process.env.TOKEN_SECRET, {expiresIn: '1h'});
+
+   res.cookie('token', token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'none'
+   })
+   .send({success: true})
+})
+
+app.post('/logout', async(req, res) => {
+  const user = req.body;
+  console.log('logging out', user)
+  res.clearCookie('token', {maxAge: 0}).send({success: true})
+})
+
+
 // read data for room page
 app.get('/bookings', async(req, res) => {
+  // const filter = req.query.filter
+  // console.log(filter)
+  // let query = {}
+  // if (filter) query = {category : filter}
   const cursor = bookingCollection.find();
   const result = await cursor.toArray();
   res.send(result);
@@ -75,8 +114,9 @@ app.put('/addings/:id', async(req, res) => {
   res.send(result)
 })
 
-app.get('/myBooking/:email', async(req, res) => {
+app.get('/myBooking/:email', logger, async(req, res) => {
   console.log(req.params.email);
+  console.log('cok cok', req.cookies);
   const result = await addingCollection.find({email:req.params.email}).toArray();
   res.send(result);
 })
