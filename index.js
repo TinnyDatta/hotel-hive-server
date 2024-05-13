@@ -127,18 +127,6 @@ app.delete('/delete/:id', async(req,res) => {
   res.send(result)
 })
 
-// featured room
-// app.get('/bookings', async(req,res) =>{
-//   console.log(req.query.price_per_night<200);
-//   let query = {};
-//   if (req.query?.price_per_night){
-//     query = {price_per_night : req.query.price_per_night<200}
-//   }
-//   const result = await bookingCollection.find(query).toArray();
-//   res.send(result);
-// })
-
-
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
